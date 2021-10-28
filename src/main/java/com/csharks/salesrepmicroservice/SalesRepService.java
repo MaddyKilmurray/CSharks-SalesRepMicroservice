@@ -25,8 +25,30 @@ public class SalesRepService {
         if (foundSalesRep.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Requested SalesRep could not be found");
         }
-        SalesRepDTO convertedSalesRep = new SalesRepDTO(foundSalesRep.get().getId(), foundSalesRep.get().getRepName());
+        return convertToDTO(foundSalesRep.get());
+    }
+
+    public SalesRepDTO create(SalesRepDTO salesRepDTO) {
+        Optional<SalesRep> existingSalesRep = salesRepRepository.findById(salesRepDTO.getId());
+        if (existingSalesRep.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"A SalesRep with id " + salesRepDTO.getId() + " already exists.");
+        }
+        salesRepRepository.save(convertToSalesRep(salesRepDTO));
+        return salesRepDTO;
+    }
+
+    public void delete(Long id) {
+        Optional<SalesRep> foundSalesRep = salesRepRepository.findById(id);
+        salesRepRepository.delete(foundSalesRep.get());
+    }
+
+    public SalesRepDTO convertToDTO(SalesRep salesRep) {
+        SalesRepDTO convertedSalesRep = new SalesRepDTO(salesRep.getId(), salesRep.getRepName());
         return convertedSalesRep;
     }
 
+    public SalesRep convertToSalesRep(SalesRepDTO salesRepDTO) {
+        SalesRep convertedSalesRep = new SalesRep(salesRepDTO.getId(), salesRepDTO.getRepName());
+        return convertedSalesRep;
+    }
 }
