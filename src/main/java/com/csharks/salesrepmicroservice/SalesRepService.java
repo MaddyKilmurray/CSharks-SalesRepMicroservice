@@ -22,7 +22,7 @@ public class SalesRepService {
 
     public SalesRepDTO findById(Long id) {
         Optional<SalesRep> foundSalesRep = salesRepRepository.findById(id);
-        if (foundSalesRep.isEmpty()) {
+        if (!foundSalesRep.isPresent()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Requested SalesRep could not be found");
         }
         return convertToDTO(foundSalesRep.get());
